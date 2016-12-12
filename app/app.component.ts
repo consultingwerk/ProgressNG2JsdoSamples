@@ -94,6 +94,7 @@ export class CategoriesService extends BehaviorSubject<GridDataResult> {
           [data]="view | async"
           [pageSize]="pageSize"
           [skip]="skip"
+          [sortable]="{ mode: 'multiple' }"
           [pageable]="true"
         >
         <kendo-grid-column field="CustNum" width="100"></kendo-grid-column>
@@ -107,6 +108,7 @@ export class AppComponent {
     private view: Observable<GridDataResult>;
     private pageSize: number = 5;
     private skip: number  = 0;
+    private sort: any;
 
     @ViewChild(GridComponent) private grid: GridComponent;
     constructor(private service: CategoriesService) {
@@ -117,11 +119,12 @@ export class AppComponent {
 
     public ngAfterViewInit(): void {
         this.grid.dataStateChange
-            .do(({ skip, take }: DataStateChangeEvent) => {
+            .do(({ skip, take, sort}: DataStateChangeEvent) => {
                 this.skip = skip;
                 this.pageSize = take;
+                this.sort = sort;
 
-                window.alert (this.sort);
+                console.log ('sort', this.sort);
             })
             .subscribe(x => this.service.query(x));
     }
