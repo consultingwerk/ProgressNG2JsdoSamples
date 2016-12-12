@@ -35,6 +35,9 @@ export class CategoriesService extends BehaviorSubject<GridDataResult> {
     }
 
     public query(state: any): void {
+
+       console.log ("query -> state:", state);
+
         this.fetch(this.tableName, state)
             .subscribe(x => super.next(x));
     }
@@ -43,8 +46,20 @@ export class CategoriesService extends BehaviorSubject<GridDataResult> {
         let that = this;
         let query = {
             skip: state.skip,
-            top: state.take
+            top: state.take,
+            orderBy: '',
+            ablFilter: "Name BEGINS 'li'"
         };
+
+console.log ("fetch state", state)
+
+        if (state.sort) {
+            query.orderBy = state.sort[0].field;
+
+            console.log ("sorting on:", query.orderBy);
+
+        }
+
         let promise = new Promise((resolve, reject) => {
             let afterFill = (jsdo: any, success: any, request: any) => {
                     jsdo.unsubscribe('AfterFill', afterFill, this);
@@ -74,6 +89,9 @@ export class CategoriesService extends BehaviorSubject<GridDataResult> {
                     }
                 };
             that.jsdo.subscribe('AfterFill', afterFill, this);
+
+console.log ("query just before jsdo.fill:", query);
+
             that.jsdo.fill(query);
         });
 
