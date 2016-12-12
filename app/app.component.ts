@@ -8,6 +8,12 @@ import {
     State
  } from '@progress/kendo-angular-grid';
 
+import {
+    SortDescriptor
+ } from '@progress/kendo-angular-grid';
+
+ import { IQuery }  from './iquery';
+
 // Include progress JSDO module
 import a = require('./progress/progress');
 let progress: any = a.progress;
@@ -44,20 +50,16 @@ export class CategoriesService extends BehaviorSubject<GridDataResult> {
 
     private fetch(tableName: string, state: State): Observable<GridDataResult> {
         let that = this;
-        let query = {
+
+        let query: IQuery = {
             skip: state.skip,
             top: state.take,
-            orderBy: '',
-            ablFilter: "Name BEGINS 'li'"
+            sort: [],
+            filter: "Name BEGINS 'li'"
         };
 
-console.log ("fetch state", state)
-
         if (state.sort) {
-            query.orderBy = state.sort[0].field;
-
-            console.log ("sorting on:", query.orderBy);
-
+              query.sort = state.sort;
         }
 
         let promise = new Promise((resolve, reject) => {
@@ -90,7 +92,6 @@ console.log ("fetch state", state)
                 };
             that.jsdo.subscribe('AfterFill', afterFill, this);
 
-console.log ("query just before jsdo.fill:", query);
 
             that.jsdo.fill(query);
         });
